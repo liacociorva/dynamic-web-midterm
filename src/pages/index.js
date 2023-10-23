@@ -1,7 +1,5 @@
 import "../app/globals.css";
 
-import React from 'react';
-import './App.css';
 import PaintingGenerator from './PaintingGenerator';
 
 function App() {

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 
 const PaintingGenerator = () => {
-  const [painting, setPainting] = useState(null);
+  const [painting, setPainting] = [null,null];
 
-  useEffect(() => {
-    fetchRandomPainting();
-  }, []);
 
   const fetchRandomPainting = async () => {
     try {
-      const response = await axios.get('https://collectionapi.metmuseum.org/public/collection/v1/objects/random');
-      setPainting(response.data);
+      const response = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/objects');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setPainting(data);
     } catch (error) {
       console.error('Error fetching painting:', error);
     }
