@@ -1,11 +1,10 @@
-import "../app/globals.css";
-
-import PaintingGenerator from './PaintingGenerator';
+import React from 'react';
+import ArtGenerator from './ArtGenerator';
 
 function App() {
   return (
     <div className="App">
-      <PaintingGenerator />
+      <ArtGenerator />
     </div>
   );
 }
