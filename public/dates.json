@@ -1,0 +1,13 @@
+{
+    "1": {"begin-date": 0, "end-date": 500},
+    "2": {"begin-date": 601, "end-date": 1000},
+    "3": {"begin-date": 1001, "end-date": 1100},
+    "4": {"begin-date": 1101, "end-date": 1200},
+    "5": {"begin-date": 1201, "end-date": 1300},
+    "6": {"begin-date": 1301, "end-date": 1400},
+    "7": {"begin-date": 1401, "end-date": 1500},
+    "8": {"begin-date": 1501, "end-date": 1600},
+    "9": {"begin-date": 1601, "end-date": 1700},
+    "10": {"begin-date": 1701, "end-date": 1800}
+  }
+  

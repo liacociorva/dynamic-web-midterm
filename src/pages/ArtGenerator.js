@@ -1,76 +1,109 @@
-import React, { useState, useEffect } from 'react';
-import Vibrant from 'node-vibrant';
+import React, { useState, useEffect } from "react";
+import styles from "./artStyles.css";
+import axios from "axios";
 
-const ArtGenerator = () => {
-  const [painting, setPainting] = useState(null);
-  const [primaryColor, setPrimaryColor] = useState(null);
-  
+function ArtGenerator() {
+  const [timePeriod, setTimePeriod] = useState(null);
+  const [artwork, setArtwork] = useState(null);
+  const [timePeriodsData, setTimePeriodsData] = useState({});
+
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  // Load the time periods from your JSON file
   useEffect(() => {
-    fetchRandomPainting();
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/dates.json");
+        setTimePeriodsData(response.data);
+
+        // Select a random time period
+        selectRandomTimePeriod();
+        setInitialLoad(false);
+      } catch (error) {
+        console.error("Error loading time periods data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  function generateRandomObjectID() {
-    const minID = 1;
-    const maxID = 471581;
-    const randomID = Math.floor(Math.random() * (maxID - minID + 1)) + minID;
-    return randomID;
-  }
+  // Function to select a random time period and fetch artwork
+  const selectRandomTimePeriod = () => {
+    const timePeriodKeys = Object.keys(timePeriodsData);
+    const randomTimePeriodKey = timePeriodKeys[Math.floor(Math.random() * timePeriodKeys.length)];
+    const selectedTimePeriod = timePeriodsData[randomTimePeriodKey];
+    setTimePeriod(selectedTimePeriod);
 
-  const fetchRandomPainting = async () => {
-    try {
-      const randomID = generateRandomObjectID();
-      const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${randomID}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log(data);
-      if (data.primaryImage && data.primaryImage.startsWith('http')) {
-        const vibrant = new Vibrant(painting.primaryImage);
-        vibrant.getPalette().then((palette) => {
-        const primary = palette.Vibrant || palette.Muted;
-        if (primary) {
-          setPrimaryColor(primary.getHex());
+    // Make an API request based on the selected time period
+    fetchArtwork(selectedTimePeriod);
+  };
+
+  // Function to fetch artwork based on the selected time period
+  const fetchArtwork = async (timePeriod) => {
+    if (timePeriod) {
+      const { "begin-date": beginDate, "end-date": endDate } = timePeriod;
+      const apiUrl = `https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&hasImages=true&dateBegin=${beginDate}&dateEnd=${endDate}&q=painting`;
+
+      try {
+        const response = await axios.get(apiUrl);
+        const artworkData = response.data.objectIDs;
+
+        if (artworkData && artworkData.length > 0) {
+          // Select a random artwork ID from the list
+          const randomArtworkID = artworkData[Math.floor(Math.random() * artworkData.length)];
+
+          // Fetch the artwork details
+          const artworkDetailsUrl = `https://collectionapi.metmuseum.org/public/collection/v1/objects/${randomArtworkID}`;
+          const artworkResponse = await axios.get(artworkDetailsUrl);
+          setArtwork(artworkResponse.data);
         } else {
-          console.error('Primary color not found in palette');
+          setArtwork(null); // No artwork found for the selected time period
         }
-      });
-    } else {
-      console.error('Invalid or missing primaryImage URL');
-    }
-      setPainting(data);
-    } catch (error) {
-      console.error('Error fetching painting:', error);
+      } catch (error) {
+        console.error("Error fetching artwork:", error);
+        setArtwork(null);
+      }
     }
   };
 
-
-  const handleNextArt = () => {
-    fetchRandomPainting();
+  const generateNewArtwork = () => {
+    fetchArtwork(timePeriod);
   };
-
 
   return (
-    <div>
-      <h1>Art Generator</h1>
-      {painting && (
-        <div>
-          <h2>Artwork</h2>
-          <h3>{painting.title}</h3>
-          <p>Artist: {painting.artistDisplayName}</p>
-          <img src={painting.primaryImageSmall} alt={painting.title} />
-        </div>
-      )}
-      <button onClick={handleNextArt}>Next Art</button>
-      {primaryColor && (
-        <div>
-          <h2>Primary Color</h2>
-          <div style={{ backgroundColor: primaryColor, width: '50px', height: '50px' }}></div>
+    <div className="AppWrapper">
+      <h1>Ancient Art Roulette</h1>
+      
+      <div className="upperContent">
+      <img src={'/flower.png'} alt="fleur" width='70'/>
+      <button className = "buttons" onClick={selectRandomTimePeriod}>Generate a Random Time Period</button>
+      <img src={'/flower.png'} alt="fleur" width='70'/>
+      </div>
+      
+      {timePeriod && (
+        <div className="lowerContent">
+          <div className="timePeriodText">
+          <p>{timePeriod["begin-date"]} AD - {timePeriod["end-date"]} AD</p>
+          </div>
+          {artwork ? (
+            <div>
+              <h2>Artwork Selected from the Metropolitan Museum of Art:</h2>
+              <button className = "buttons" onClick={generateNewArtwork}>Generate Another Artwork From this Time Period</button>
+              <div className="artwork">
+              <p className="titleText">Title: "{artwork.title}"</p>
+              <p>Date: {artwork.objectDate}</p>
+              <div className="artImage">
+              <img src={artwork.primaryImageSmall} alt={artwork.title} />
+              </div>
+              </div>
+            </div>
+          ) : (
+            <p>Loading...</p>
+          )}
         </div>
       )}
     </div>
   );
-};
-
+}
 
 export default ArtGenerator;
