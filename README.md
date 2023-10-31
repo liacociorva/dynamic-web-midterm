@@ -1,1 +1,2 @@
 # Midterm
+This website allows the user to randomly generate a medieval time period and then toggle through the Met's collection of artworks for that selected time period. The user can generate new artwork or a new time period at any time. Also, the date that the Met accquired the artwork is displayed dynamically, as in the background element of that text changes color to be darker the more recently the artwork was acquired, and lighter if the painting was acquired a relatively longer time ago.
