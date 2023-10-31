@@ -93,7 +93,7 @@ function ArtGenerator() {
               <div className="artwork">
               <p className="titleText">Title: "{artwork.title}"</p>
               <p>Date: {artwork.objectDate}</p>
-              <p className = 'acquisitionDate' style={{backgroundColor: `rgba(139, 46, 0,.${2023 - artwork.accessionYear})`}}>Acquired by the Met in {artwork.accessionYear}</p>
+              <p className = 'acquisitionDate' style={{backgroundColor: `rgba(139, 46, 0,${(artwork.accessionYear/150)-12.5})`}}>Acquired by the Met in {artwork.accessionYear}</p>
               <div className="artImage">
               <img src={artwork.primaryImageSmall} alt={artwork.title} />
               </div>
