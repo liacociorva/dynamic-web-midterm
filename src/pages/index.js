@@ -1,12 +1,12 @@
 import React from 'react';
 import ArtGenerator from './ArtGenerator';
 
-function App() {
+function Website() {
   return (
-    <div className="App">
+    <div>
       <ArtGenerator />
     </div>
   );
 }
 
-export default App;
+export default Website;

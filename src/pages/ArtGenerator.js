@@ -6,10 +6,9 @@ function ArtGenerator() {
   const [timePeriod, setTimePeriod] = useState(null);
   const [artwork, setArtwork] = useState(null);
   const [timePeriodsData, setTimePeriodsData] = useState({});
-
   const [initialLoad, setInitialLoad] = useState(true);
 
-  // Load the time periods from your JSON file
+  // Load the time periods from json
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -19,6 +18,7 @@ function ArtGenerator() {
         // Select a random time period
         selectRandomTimePeriod();
         setInitialLoad(false);
+
       } catch (error) {
         console.error("Error loading time periods data:", error);
       }
@@ -27,18 +27,20 @@ function ArtGenerator() {
     fetchData();
   }, []);
 
-  // Function to select a random time period and fetch artwork
+  // This function selects a random time period and fetches corresponding artwork
   const selectRandomTimePeriod = () => {
+    //Select the random time period
     const timePeriodKeys = Object.keys(timePeriodsData);
     const randomTimePeriodKey = timePeriodKeys[Math.floor(Math.random() * timePeriodKeys.length)];
     const selectedTimePeriod = timePeriodsData[randomTimePeriodKey];
+    
     setTimePeriod(selectedTimePeriod);
 
     // Make an API request based on the selected time period
     fetchArtwork(selectedTimePeriod);
   };
 
-  // Function to fetch artwork based on the selected time period
+  // Then this function selects artwork based on the selected time period
   const fetchArtwork = async (timePeriod) => {
     if (timePeriod) {
       const { "begin-date": beginDate, "end-date": endDate } = timePeriod;
@@ -52,16 +54,15 @@ function ArtGenerator() {
           // Select a random artwork ID from the list
           const randomArtworkID = artworkData[Math.floor(Math.random() * artworkData.length)];
 
-          // Fetch the artwork details
+          // Then fetch the artwork details
           const artworkDetailsUrl = `https://collectionapi.metmuseum.org/public/collection/v1/objects/${randomArtworkID}`;
           const artworkResponse = await axios.get(artworkDetailsUrl);
           setArtwork(artworkResponse.data);
         } else {
-          setArtwork(null); // No artwork found for the selected time period
+          setArtwork(null); // If no artwork is found for the selected time period
         }
       } catch (error) {
         console.error("Error fetching artwork:", error);
-        setArtwork(null);
       }
     }
   };
@@ -71,12 +72,12 @@ function ArtGenerator() {
   };
 
   return (
-    <div className="AppWrapper">
-      <h1>Ancient Art Roulette</h1>
+    <div className="WebWrapper">
+      <h1>Medieval Art Roulette</h1>
       
       <div className="upperContent">
       <img src={'/flower.png'} alt="fleur" width='70'/>
-      <button className = "buttons" onClick={selectRandomTimePeriod}>Generate a Random Time Period</button>
+      <button onClick={selectRandomTimePeriod}>Generate a Random Time Period</button>
       <img src={'/flower.png'} alt="fleur" width='70'/>
       </div>
       
@@ -88,10 +89,11 @@ function ArtGenerator() {
           {artwork ? (
             <div>
               <h2>Artwork Selected from the Metropolitan Museum of Art:</h2>
-              <button className = "buttons" onClick={generateNewArtwork}>Generate Another Artwork From this Time Period</button>
+              <button onClick={generateNewArtwork}>Generate Another Artwork From this Time Period</button>
               <div className="artwork">
               <p className="titleText">Title: "{artwork.title}"</p>
               <p>Date: {artwork.objectDate}</p>
+              <p className = 'acquisitionDate' style={{backgroundColor: `rgba(139, 46, 0,.${2023 - artwork.accessionYear})`}}>Acquired by the Met in {artwork.accessionYear}</p>
               <div className="artImage">
               <img src={artwork.primaryImageSmall} alt={artwork.title} />
               </div>
